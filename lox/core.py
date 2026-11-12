@@ -1,6 +1,11 @@
 from .exitcodes import EX_OK, EX_DATAERR, EX_NOINPUT, EX_SOFTWARE
+from .errors import ErrorHandler
 
 def run_prompt() -> None:
+    # Initialise the error handler.
+    error_handler: ErrorHandler = ErrorHandler()
+
+    # Main loop.
     while True:
         try:
             # Try to take the input.
@@ -11,10 +16,10 @@ def run_prompt() -> None:
                 break
 
             # Process the line.
-            run(line)
+            run(line, error_handler)
 
             # Reset error flags.
-            pass
+            error_handler.reset_flags()
 
         except KeyboardInterrupt:
             break
@@ -29,10 +34,13 @@ def run_file(filePath: str) -> int:
             contents: str = file.read()
 
         # Try to execute the code.
-        run(contents)
+        error_handler: ErrorHandler = ErrorHandler()
+
+        run(contents, error_handler)
 
         # Indicate an error in the return value, if any.
-        pass
+        if error_handler.had_error:
+            return EX_DATAERR
 
         # If everything went well.
         return EX_OK
@@ -41,6 +49,6 @@ def run_file(filePath: str) -> int:
         print(f"File {filePath} was not found.")
         return EX_NOINPUT
 
-def run(source: str) -> None:
+def run(source: str, error_handler: ErrorHandler) -> None:
     print(f"Running: {source}")
 
