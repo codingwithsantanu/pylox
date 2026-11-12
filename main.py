@@ -1,5 +1,7 @@
+import lox
+
 def main() -> None:
-    print("Hello, world!")
+    lox.main()
 
 if __name__ == "__main__":
     main()
