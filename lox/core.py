@@ -1,5 +1,9 @@
+import pprint
+
 from .exitcodes import EX_OK, EX_DATAERR, EX_NOINPUT, EX_SOFTWARE
 from .errors import ErrorHandler
+from .tokens import Token
+from .lexer import Lexer
 
 def run_prompt() -> None:
     # Initialise the error handler.
@@ -51,4 +55,11 @@ def run_file(filePath: str) -> int:
 
 def run(source: str, error_handler: ErrorHandler) -> None:
     print(f"Running: {source}")
+
+    # Lexical Analysis.
+    lexer: Lexer = Lexer(source, error_handler)
+    tokens: list[Token] = lexer.scan_tokens()
+
+    # Debug: Display the tokens.
+    pprint.pprint(tokens)
 
