@@ -36,21 +36,21 @@ class BinaryExpr(Expr):
     right: Expr
 
     def visit(self, visitor: ExprVisitor) -> Any:
-        visitor.visit_binary_expr(self)
+        return visitor.visit_binary_expr(self)
 
 @dataclass
 class GroupingExpr(Expr):
     expression: Expr
 
     def visit(self, visitor: ExprVisitor) -> Any:
-        visitor.visit_grouping_expr(self)
+        return visitor.visit_grouping_expr(self)
 
 @dataclass
 class LiteralExpr(Expr):
     value: float | bool | str
 
     def visit(self, visitor: ExprVisitor) -> Any:
-        visitor.visit_literal_expr(self)
+        return visitor.visit_literal_expr(self)
 
 @dataclass
 class UnaryExpr(Expr):
@@ -58,5 +58,5 @@ class UnaryExpr(Expr):
     expression: Expr
 
     def visit(self, visitor: ExprVisitor) -> Any:
-        visitor.visit_unary_expr(self)
+        return visitor.visit_unary_expr(self)
 

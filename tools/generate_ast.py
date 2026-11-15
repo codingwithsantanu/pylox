@@ -97,7 +97,7 @@ def define_branch(
     method_name: str = f"visit_{class_name.lower()}_{base_name.lower()}"
     file.write(
         f"{INDENT}def visit(self, visitor: {base_name}Visitor) -> Any:\n"
-        f"{INDENT}{INDENT}visitor.{method_name}(self)\n\n"
+        f"{INDENT}{INDENT}return visitor.{method_name}(self)\n\n"
     )
 
 if __name__ == "__main__":
