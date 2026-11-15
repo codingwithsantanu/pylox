@@ -8,7 +8,7 @@ My Python port of the Lox programming language.
 ## Progression through the Book
 
 - [x] Scanning.
-- [ ] Representing Code.
+- [x] Representing Code.
 - [ ] Parsing Expressions.
 - [ ] Evaluating Expressions.
 - [ ] Statements and State.
