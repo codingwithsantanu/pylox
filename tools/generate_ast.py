@@ -5,32 +5,32 @@ from typing import TextIO
 BASE: Path = Path(__file__).parent.parent
 SRC: Path = BASE / "lox"
 EXPR_FILE: Path = SRC / "expr.py"
-TEST_FILE: Path = BASE / "test.py"
 
 INDENT: str = " " * 4
 
-type Ast = dict[str, tuple[tuple[str, str]]]
+type Parameter = tuple[str, str]
+type Ast = dict[str, tuple[Parameter]]
 EXPR: Ast = {
     # Phase: Evaluating Expresions.
     "Binary": (
         ("left", "Expr"),
         ("operator", "Token"),
-        ("right", "Expr")
+        ("right", "Expr"),
     ),
     "Grouping": (
-        ("expression", "Expr")
+        ("expression", "Expr"),
     ),
     "Literal": (
-        ("value", "float | bool | str")
+        ("value", "float | bool | str"),
     ),
     "Unary": (
         ("operator", "Token"),
-        ("expression", "Expr")
+        ("expression", "Expr"),
     )
 }
 
 def main() -> None:
-    define_ast("Expr", TEST_FILE, EXPR)
+    define_ast("Expr", EXPR_FILE, EXPR)
 
 def define_ast(base_name: str, file_path: Path, specification: Ast) -> None:
     with file_path.open("w", encoding="utf-8") as file:
@@ -39,6 +39,9 @@ def define_ast(base_name: str, file_path: Path, specification: Ast) -> None:
         define_imports(file)
         define_base_class(file, base_name)
         define_visitor_class(file, base_name, specification)
+
+        for name, parameters in specification.items():
+            define_branch(file, name, base_name, parameters)
 
 def define_imports(file: TextIO) -> None:
     file.write(
@@ -65,13 +68,37 @@ def define_visitor_class(file: TextIO, base_name: str, specification: Ast) -> No
     file.write(f"class {base_name}Visitor(ABC):\n")
 
     for class_name in specification.keys():
-        method_name = f"visit_{class_name.lower()}_{base_name.lower()}"
+        method_name: str = f"visit_{class_name.lower()}_{base_name.lower()}"
         file.write(
             f"{INDENT}@abstractmethod\n"
-            f"{INDENT}def {method_name}(self, visitor: {base_name}Visitor:\n"
+            f"{INDENT}def {method_name}(self, visitor: {base_name}Visitor):\n"
             f"{INDENT}{INDENT}pass\n"
             f"\n"
         )
+
+def define_branch(
+    file: TextIO,
+    class_name: str,
+    base_name: str,
+    parameters: tuple[Parameter]
+) -> None:
+    file.write(
+        f"@dataclass\n"
+        f"class {class_name}{base_name}({base_name}):\n"
+    )
+
+    for parameter in parameters:
+        name: str = parameter[0]
+        type_name: str = parameter[1]
+
+        file.write(f"{INDENT}{name}: {type_name}\n")
+    file.write("\n")
+    
+    method_name: str = f"visit_{class_name.lower()}_{base_name.lower()}"
+    file.write(
+        f"{INDENT}def visit(self, visitor: {base_name}Visitor) -> Any:\n"
+        f"{INDENT}{INDENT}visitor.{method_name}(self)\n\n"
+    )
 
 if __name__ == "__main__":
     main()
