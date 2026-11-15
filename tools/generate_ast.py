@@ -38,7 +38,8 @@ def define_ast(base_name: str, file_path: Path, specification: Ast) -> None:
 
         define_imports(file)
         define_base_class(file, base_name)
-        
+        define_visitor_class(file, base_name, specification)
+
 def define_imports(file: TextIO) -> None:
     file.write(
         "from __future__ import annotations\n"
@@ -59,6 +60,18 @@ def define_base_class(file: TextIO, base_name: str) -> None:
         f"{INDENT}{INDENT}pass\n"
         f"\n"
     )
+
+def define_visitor_class(file: TextIO, base_name: str, specification: Ast) -> None:
+    file.write(f"class {base_name}Visitor(ABC):\n")
+
+    for class_name in specification.keys():
+        method_name = f"visit_{class_name.lower()}_{base_name.lower()}"
+        file.write(
+            f"{INDENT}@abstractmethod\n"
+            f"{INDENT}def {method_name}(self, visitor: {base_name}Visitor:\n"
+            f"{INDENT}{INDENT}pass\n"
+            f"\n"
+        )
 
 if __name__ == "__main__":
     main()
